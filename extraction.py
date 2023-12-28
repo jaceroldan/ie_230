@@ -38,14 +38,17 @@ with open('../dataset.csv', 'w', newline='') as csvfile:
         confidence_response = float(confidence_q.answer) if confidence_q else 5.0
         interest_response = float(interest_q.answer) if interest_q else 5.0
         severity = c.tags.filter(name__icontains='severity').first()
-        if severity == 'Minor-Severity':
-            severity_response = 1
-        elif severity == 'Major Severity':
-            severity_response = 2
-        elif severity == 'Critical Severity':
-            severity_response = 3
-        else:
-            severity_response = 1
+
+        severity_response = 1
+        if severity:
+            severity = severity.name
+            if 'critical' in severity.lower():
+                severity_response = 3
+            elif 'major' in severity.lower():
+                severity_response = 2
+            else:
+                severity_response = 3
+
 
         now = timezone.now()
         years_of_experience = (now - t.employment.start_date).days / 365.25
